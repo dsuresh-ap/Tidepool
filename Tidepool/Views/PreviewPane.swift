@@ -5,9 +5,19 @@ import WebKit
 struct PreviewPane: View {
     let renderer: DiagramRenderer
     let kind: DiagramKind?
+    var isEmpty = false
 
     var body: some View {
         WebView(renderer.page)
+            .overlay {
+                if isEmpty {
+                    ContentUnavailableView(
+                        "No Diagram",
+                        systemImage: "point.3.connected.trianglepath.dotted",
+                        description: Text("Type Mermaid code, or choose a diagram from Examples.")
+                    )
+                }
+            }
             .webViewContentBackground(.hidden)
             .webViewMagnificationGestures(.enabled)
             .webViewLinkPreviews(.disabled)

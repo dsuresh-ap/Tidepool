@@ -81,3 +81,82 @@ final class EditorUITests: XCTestCase {
     }
 }
 
+
+final class ViewerUITests: XCTestCase {
+    private var app: XCUIApplication!
+
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments += ["-ApplePersistenceIgnoreState", "YES"]
+        app.launch()
+        let openPanel = app.windows["open-panel"]
+        if openPanel.waitForExistence(timeout: 5) { app.typeKey(.escape, modifierFlags: []) }
+    }
+
+    override func tearDownWithError() throws {
+        app.terminate()
+    }
+
+    private var editor: XCUIElement { app.textViews["editor"].firstMatch }
+    private var exportMenu: XCUIElement { app.toolbars.menuButtons["Export"].firstMatch }
+
+    func testNewFromClipboardExtractsMermaidBlock() {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString("Sure:\n```mermaid\nstateDiagram-v2\n    [*] --> Ready\n```\n", forType: .string)
+        app.typeKey("n", modifierFlags: [.command, .shift])
+
+        XCTAssertTrue(editor.waitForExistence(timeout: 10))
+        XCTAssertEqual(editor.value as? String, "stateDiagram-v2\n    [*] --> Ready")
+        let kind = app.staticTexts["diagramKind"].firstMatch
+        XCTAssertTrue(kind.waitForExistence(timeout: 20))
+        XCTAssertEqual(kind.value as? String, "State Diagram")
+    }
+
+    func testSourceToggleHidesAndShowsEditor() {
+        app.typeKey("n", modifierFlags: .command)
+        XCTAssertTrue(editor.waitForExistence(timeout: 10))
+
+        app.typeKey("s", modifierFlags: [.control, .command])
+        XCTAssertTrue(editor.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["diagramKind"].firstMatch.exists, "The preview stays visible")
+
+        app.toolbars.buttons["sourceToggle"].click()
+        XCTAssertTrue(editor.waitForExistence(timeout: 5))
+    }
+
+    func testZoomShortcutsChangeZoomLabel() {
+        app.typeKey("n", modifierFlags: .command)
+        let fit = app.toolbars.buttons["Zoom to Fit"].firstMatch
+        XCTAssertTrue(fit.waitForExistence(timeout: 10))
+        XCTAssertEqual(fit.value as? String, "Fit")
+
+        app.typeKey("=", modifierFlags: .command)
+        let zoomedIn = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "125%"), object: fit)
+        XCTAssertEqual(XCTWaiter().wait(for: [zoomedIn], timeout: 5), .completed)
+        app.typeKey("0", modifierFlags: .command)
+        XCTAssertEqual(fit.value as? String, "Fit")
+    }
+
+    func testCopyAsMarkdownPutsCodeBlockOnPasteboard() {
+        app.typeKey("n", modifierFlags: .command)
+        XCTAssertTrue(exportMenu.wait(for: \.isEnabled, toEqual: true, timeout: 20))
+        exportMenu.click()
+        app.menuItems["Copy as Markdown"].firstMatch.click()
+
+        XCTAssertTrue(app.descendants(matching: .any)["confirmation"].waitForExistence(timeout: 5))
+        let copied = NSPasteboard.general.string(forType: .string) ?? ""
+        XCTAssertTrue(copied.hasPrefix("```mermaid\nflowchart TD\n"), copied)
+        XCTAssertTrue(copied.hasSuffix("```\n"))
+    }
+
+    func testEmptyDocumentShowsGuidance() {
+        app.typeKey("n", modifierFlags: .command)
+        XCTAssertTrue(editor.waitForExistence(timeout: 10))
+        editor.click()
+        app.typeKey("a", modifierFlags: .command)
+        app.typeKey(.delete, modifierFlags: [])
+        XCTAssertTrue(app.staticTexts["No Diagram"].waitForExistence(timeout: 5))
+        XCTAssertFalse(exportMenu.isEnabled)
+    }
+}
