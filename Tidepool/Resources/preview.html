@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-{{NONCE}}'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:">
+<style>
+  :root { color-scheme: light dark; }
+  html, body { margin: 0; background: transparent; }
+  #diagram { box-sizing: border-box; padding: 24px; display: flex; justify-content: center; }
+  #diagram svg { height: auto; }
+</style>
+<script nonce="{{NONCE}}">{{MERMAID}}</script>
+<script nonce="{{NONCE}}">
+(() => {
+  const state = { seq: 0, zoom: 1 };
+  const container = () => document.getElementById('diagram');
+
+  // Mermaid output can be HTML-flavored; parse it as HTML, then serialize as strict XML.
+  function parseSVG(text) {
+    const template = document.createElement('template');
+    template.innerHTML = text;
+    return template.content.querySelector('svg');
+  }
+
+  function naturalSize(svg) {
+    const box = (svg.getAttribute('viewBox') || '').trim().split(/[\s,]+/).map(Number);
+    if (box.length === 4 && box[2] > 0 && box[3] > 0) return { width: box[2], height: box[3] };
+    const rect = svg.getBoundingClientRect();
+    return { width: rect.width || 300, height: rect.height || 150 };
+  }
+
+  function applyZoom() {
+    const svg = container().querySelector('svg');
+    if (!svg) return;
+    const { width } = naturalSize(svg);
+    svg.style.maxWidth = state.zoom === 1 ? '100%' : 'none';
+    svg.style.width = `${width * state.zoom}px`;
+  }
+
+  window.tidepool = {
+    async render(code, theme) {
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'strict',
+        theme,
+        htmlLabels: false,
+        flowchart: { htmlLabels: false },
+      });
+      const id = `tidepool-${++state.seq}`;
+      try {
+        await mermaid.parse(code);
+        const { svg } = await mermaid.render(id, code);
+        container().innerHTML = svg;
+        applyZoom();
+        return { svg };
+      } catch (error) {
+        document.getElementById(`d${id}`)?.remove();
+        return { error: String(error?.message ?? error) };
+      }
+    },
+
+    clear() {
+      container().innerHTML = '';
+    },
+
+    setZoom(zoom) {
+      state.zoom = zoom;
+      applyZoom();
+    },
+
+    // Returns the shown diagram as a standalone SVG file with fixed size and background.
+    exportSVG(background) {
+      const shown = container().querySelector('svg');
+      if (!shown) throw new Error('There is no diagram to export.');
+      const svg = parseSVG(shown.outerHTML);
+      const { width, height } = naturalSize(svg);
+      svg.setAttribute('width', Math.ceil(width));
+      svg.setAttribute('height', Math.ceil(height));
+      svg.style.maxWidth = '';
+      svg.style.width = '';
+      if (background) svg.style.backgroundColor = background;
+      const xml = new XMLSerializer().serializeToString(svg);
+      return { svg: `<?xml version="1.0" encoding="UTF-8"?>\n${xml}`, width: Math.ceil(width), height: Math.ceil(height) };
+    },
+
+    // Draws the exported SVG on a canvas and returns base64-encoded PNG data.
+    async exportPNG(background, scale) {
+      const { svg, width, height } = this.exportSVG(background);
+      const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+      try {
+        const image = new Image();
+        image.src = url;
+        await image.decode();
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(width * scale);
+        canvas.height = Math.round(height * scale);
+        const context = canvas.getContext('2d');
+        context.fillStyle = background;
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.scale(scale, scale);
+        context.drawImage(image, 0, 0, width, height);
+        return canvas.toDataURL('image/png').split(',')[1];
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    },
+  };
+})();
+</script>
+</head>
+<body><div id="diagram"></div></body>
+</html>
