@@ -6,6 +6,8 @@ struct PreviewPane: View {
     let renderer: DiagramRenderer
     let kind: DiagramKind?
     var isEmpty = false
+    var errorLine: Int?
+    var showLine: (Int) -> Void = { _ in }
 
     var body: some View {
         WebView(renderer.page)
@@ -28,7 +30,7 @@ struct PreviewPane: View {
     @ViewBuilder private var statusBar: some View {
         if let message = renderer.errorMessage {
             Label {
-                Text(message)
+                Text(MermaidErrorLocation.displayMessage(message, line: errorLine))
                     .font(.callout.monospaced())
                     .lineLimit(6)
                     .textSelection(.enabled)
@@ -37,8 +39,18 @@ struct PreviewPane: View {
                 Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
             }
             .padding(10)
+            .overlay(alignment: .topTrailing) {
+                if let errorLine {
+                    Button("Line \(errorLine)") { showLine(errorLine) }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        .help("Show line \(errorLine) in the source")
+                        .accessibilityIdentifier("errorLineButton")
+                        .padding(8)
+                }
+            }
             .background(.regularMaterial)
-            .accessibilityElement(children: .combine)
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("renderError")
         } else if let kind {
             Text(kind.title)

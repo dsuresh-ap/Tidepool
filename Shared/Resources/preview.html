@@ -71,7 +71,8 @@
         return { svg };
       } catch (error) {
         document.getElementById(`d${id}`)?.remove();
-        return { error: String(error?.message ?? error) };
+        // Older (Jison) parsers report a 1-based line in error.hash.loc.
+        return { error: String(error?.message ?? error), line: error?.hash?.loc?.first_line ?? null };
       }
     },
 

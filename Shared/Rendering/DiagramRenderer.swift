@@ -27,6 +27,8 @@ final class DiagramRenderer {
     private(set) var svg: String?
     /// The Mermaid error message for the current source, if any.
     private(set) var errorMessage: String?
+    /// The line number that Mermaid reported for the error, if it reported one.
+    private(set) var reportedErrorLine: Int?
 
     private var loading: Task<Void, Error>?
 
@@ -42,6 +44,7 @@ final class DiagramRenderer {
                 _ = try await page.callJavaScript("window.tidepool.clear()")
                 svg = nil
                 errorMessage = nil
+                reportedErrorLine = nil
                 return
             }
             let result = try await page.callJavaScript(
@@ -51,8 +54,10 @@ final class DiagramRenderer {
             if let markup = result?["svg"] as? String {
                 svg = markup
                 errorMessage = nil
+                reportedErrorLine = nil
             } else {
                 errorMessage = result?["error"] as? String ?? RenderError.invalidResult.localizedDescription
+                reportedErrorLine = (result?["line"] as? NSNumber)?.intValue
             }
         } catch is CancellationError {
             return

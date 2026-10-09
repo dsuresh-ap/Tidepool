@@ -2,6 +2,13 @@ import SwiftUI
 
 @main
 struct TidepoolApp: App {
+    init() {
+        // When the app hosts unit tests, keep it in the background so it does not take focus.
+        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+            NSApplication.shared.setActivationPolicy(.prohibited)
+        }
+    }
+
     var body: some Scene {
         DocumentGroup(newDocument: MermaidDocument()) { file in
             EditorView(text: file.$document.text, fileURL: file.fileURL)

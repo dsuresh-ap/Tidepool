@@ -160,3 +160,30 @@ final class ViewerUITests: XCTestCase {
         XCTAssertFalse(exportMenu.isEnabled)
     }
 }
+
+final class ErrorUITests: XCTestCase {
+    func testErrorLineButtonPointsAtTheBrokenLine() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments += ["-ApplePersistenceIgnoreState", "YES"]
+        app.launch()
+        defer { app.terminate() }
+        let openPanel = app.windows["open-panel"]
+        if openPanel.waitForExistence(timeout: 5) { app.typeKey(.escape, modifierFlags: []) }
+        app.typeKey("n", modifierFlags: .command)
+
+        let editor = app.textViews["editor"].firstMatch
+        XCTAssertTrue(editor.waitForExistence(timeout: 10))
+        editor.click()
+        app.typeKey("a", modifierFlags: .command)
+        editor.typeText("flowchart LR\n    A --> B\n    B --> C[Open\n")
+        app.typeKey(.escape, modifierFlags: [])
+
+        let lineButton = app.buttons["errorLineButton"].firstMatch
+        XCTAssertTrue(lineButton.waitForExistence(timeout: 10))
+        XCTAssertEqual(editor.value as? String, "flowchart LR\n    A --> B\n    B --> C[Open\n", "Completion must not change typed text")
+        XCTAssertEqual(lineButton.label, "Line 3")
+        lineButton.click()
+        XCTAssertTrue((editor.value(forKey: "hasKeyboardFocus") as? Bool) ?? false)
+    }
+}

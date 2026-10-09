@@ -46,7 +46,7 @@ enum MermaidSyntax {
     }
 
     /// The range of the first line that is not blank, a comment, or YAML front matter.
-    private static func firstStatement(in source: String) -> Range<String.Index>? {
+    static func firstStatement(in source: String) -> Range<String.Index>? {
         var inFrontMatter = false
         var isFirst = true
         var start = source.startIndex

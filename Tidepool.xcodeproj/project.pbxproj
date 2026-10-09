@@ -6,6 +6,10 @@
 	objectVersion = 90;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		000000000000000160000000 /* TidepoolQuickLook.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 000000000000000000000420 /* TidepoolQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		000000000000000250000000 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,12 +25,32 @@
 			remoteGlobalIDString = 000000000000000100000000;
 			remoteInfo = Tidepool;
 		};
+		000000000000000450000000 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 000000000000000000000000 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 000000000000000400000000;
+			remoteInfo = TidepoolQuickLook;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		000000000000000150000000 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = PlugIns;
+			files = (
+				000000000000000160000000 /* TidepoolQuickLook.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		000000000000000000000120 /* Tidepool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tidepool.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		000000000000000000000220 /* TidepoolTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TidepoolTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		000000000000000000000320 /* TidepoolUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TidepoolUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		000000000000000000000420 /* TidepoolQuickLook.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TidepoolQuickLook.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -43,6 +67,16 @@
 		000000000000000000000310 /* TidepoolUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = TidepoolUITests;
+			sourceTree = "<group>";
+		};
+		000000000000000000000410 /* TidepoolQuickLook */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = TidepoolQuickLook;
+			sourceTree = "<group>";
+		};
+		000000000000000000000610 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -63,6 +97,11 @@
 			files = (
 			);
 		};
+		000000000000000430000000 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -70,6 +109,8 @@
 			isa = PBXGroup;
 			children = (
 				000000000000000000000010 /* Tidepool */,
+				000000000000000000000610 /* Shared */,
+				000000000000000000000410 /* TidepoolQuickLook */,
 				000000000000000000000210 /* TidepoolTests */,
 				000000000000000000000310 /* TidepoolUITests */,
 				000000000000000000000020 /* Products */,
@@ -82,6 +123,7 @@
 				000000000000000000000120 /* Tidepool.app */,
 				000000000000000000000220 /* TidepoolTests.xctest */,
 				000000000000000000000320 /* TidepoolUITests.xctest */,
+				000000000000000000000420 /* TidepoolQuickLook.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -96,11 +138,16 @@
 				000000000000000120000000 /* Sources */,
 				000000000000000130000000 /* Frameworks */,
 				000000000000000140000000 /* Resources */,
+				000000000000000150000000 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
+			dependencies = (
+				000000000000000460000000 /* PBXTargetDependency */,
+			);
 			fileSystemSynchronizedGroups = (
 				000000000000000000000010 /* Tidepool */,
+				000000000000000000000610 /* Shared */,
 			);
 			name = Tidepool;
 			productName = Tidepool;
@@ -149,6 +196,25 @@
 			productReference = 000000000000000000000320 /* TidepoolUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		000000000000000400000000 /* TidepoolQuickLook */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 000000000000000410000000 /* Build configuration list for PBXNativeTarget "TidepoolQuickLook" */;
+			buildPhases = (
+				000000000000000420000000 /* Sources */,
+				000000000000000430000000 /* Frameworks */,
+				000000000000000440000000 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				000000000000000000000410 /* TidepoolQuickLook */,
+				000000000000000000000610 /* Shared */,
+			);
+			name = TidepoolQuickLook;
+			productName = TidepoolQuickLook;
+			productReference = 000000000000000000000420 /* TidepoolQuickLook.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -170,6 +236,9 @@
 						CreatedOnToolsVersion = 27.0;
 						TestTargetID = 000000000000000100000000;
 					};
+					000000000000000400000000 = {
+						CreatedOnToolsVersion = 27.0;
+					};
 				};
 			};
 			buildConfigurationList = 000000000000000010000000 /* Build configuration list for PBXProject "Tidepool" */;
@@ -189,6 +258,7 @@
 				000000000000000100000000 /* Tidepool */,
 				000000000000000200000000 /* TidepoolTests */,
 				000000000000000300000000 /* TidepoolUITests */,
+				000000000000000400000000 /* TidepoolQuickLook */,
 			);
 		};
 /* End PBXProject section */
@@ -205,6 +275,11 @@
 			);
 		};
 		000000000000000340000000 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		000000000000000440000000 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -227,6 +302,11 @@
 			files = (
 			);
 		};
+		000000000000000420000000 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -239,6 +319,11 @@
 			isa = PBXTargetDependency;
 			target = 000000000000000100000000 /* Tidepool */;
 			targetProxy = 000000000000000350000000 /* PBXContainerItemProxy */;
+		};
+		000000000000000460000000 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 000000000000000400000000 /* TidepoolQuickLook */;
+			targetProxy = 000000000000000450000000 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -519,6 +604,68 @@
 			};
 			name = Release;
 		};
+		000000000000000411000000 /* Debug configuration for PBXNativeTarget "TidepoolQuickLook" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/QuickLook-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Tidepool Quick Look";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Dhananjay Suresh. MIT License.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.github.dsuresh-ap.Tidepool.QuickLook";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		000000000000000412000000 /* Release configuration for PBXNativeTarget "TidepoolQuickLook" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/QuickLook-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Tidepool Quick Look";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Dhananjay Suresh. MIT License.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.github.dsuresh-ap.Tidepool.QuickLook";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -551,6 +698,14 @@
 			buildConfigurations = (
 				000000000000000311000000 /* Debug configuration for PBXNativeTarget "TidepoolUITests" */,
 				000000000000000312000000 /* Release configuration for PBXNativeTarget "TidepoolUITests" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		000000000000000410000000 /* Build configuration list for PBXNativeTarget "TidepoolQuickLook" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				000000000000000411000000 /* Debug configuration for PBXNativeTarget "TidepoolQuickLook" */,
+				000000000000000412000000 /* Release configuration for PBXNativeTarget "TidepoolQuickLook" */,
 			);
 			defaultConfigurationName = Release;
 		};

@@ -60,6 +60,9 @@ enum DiagramKind: String, CaseIterable, Identifiable {
         }
     }
 
+    /// Every keyword that starts a diagram, for completion.
+    static var allKeywords: [String] { allCases.flatMap(\.keywords) }
+
     /// Mermaid keywords that start a diagram of this kind.
     private var keywords: [String] {
         switch self {

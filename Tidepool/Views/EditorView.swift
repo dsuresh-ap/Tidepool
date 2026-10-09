@@ -12,6 +12,7 @@ struct EditorView: View {
     @State private var exportError: String?
     @State private var pendingExample: DiagramKind?
     @State private var confirmation: String?
+    @State private var reveal: CodeEditor.LineRequest?
     @AppStorage("theme") private var theme = DiagramTheme.automatic
     @AppStorage("showsSource") private var showsSource = true
     @Environment(\.colorScheme) private var colorScheme
@@ -21,10 +22,16 @@ struct EditorView: View {
     var body: some View {
         HSplitView {
             if showsSource {
-                CodeEditor(text: $text)
+                CodeEditor(text: $text, errorLine: errorLine, reveal: reveal)
                     .frame(minWidth: 240, idealWidth: 380)
             }
-            PreviewPane(renderer: renderer, kind: DiagramKind.detect(in: text), isEmpty: isEmpty)
+            PreviewPane(
+                renderer: renderer, kind: DiagramKind.detect(in: text), isEmpty: isEmpty, errorLine: errorLine,
+                showLine: { line in
+                    showsSource = true
+                    reveal = CodeEditor.LineRequest(line: line)
+                }
+            )
                 .frame(minWidth: 280, maxWidth: .infinity, maxHeight: .infinity)
                 .overlay(alignment: .top) { confirmationBadge }
         }
@@ -65,6 +72,12 @@ struct EditorView: View {
     }
 
     private var isEmpty: Bool { text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+
+    private var errorLine: Int? {
+        renderer.errorMessage.flatMap {
+            MermaidErrorLocation.sourceLine(reported: renderer.reportedErrorLine, message: $0, in: text)
+        }
+    }
 
     @ToolbarContentBuilder private var toolbar: some ToolbarContent {
         ToolbarItem(placement: .navigation) {
