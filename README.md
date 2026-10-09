@@ -6,7 +6,9 @@ Write [Mermaid](https://mermaid.js.org) on the left and see the diagram on the r
 
 ## Features
 
-- **Live preview.** The preview updates as you type. When the source has an error, the last good diagram stays on screen and the Mermaid error shows below it.
+- **Live preview.** The preview updates as you type. When the source has an error, the last good diagram stays on screen, the broken line is marked in the source, and **Line N** in the error bar takes you to it.
+- **Quick Look.** Select a `.mmd` file in Finder and press Space to see the diagram.
+- **Code completion.** Suggestions appear as you type: diagram types on the first line, then keywords for that diagram type and the names you already use. Press Esc to show them at any time.
 - **Follows generated files.** When a script or tool rewrites an open `.mmd` file, the window shows the new diagram. Unsaved edits in the window are kept.
 - **Paste from anywhere.** **File › New Diagram from Clipboard** makes a diagram from copied Mermaid code. If you copy a chat reply or a README, Tidepool uses the first ```` ```mermaid ```` block.
 - **Many diagrams at once.** Each document opens as a tab. Drag a tab out to make a window, or tile two windows side by side.
@@ -27,6 +29,7 @@ Write [Mermaid](https://mermaid.js.org) on the left and see the diagram on the r
 | Zoom in / out | ⌘= / ⌘− |
 | Fit to window | ⌘0 |
 | Find in source | ⌘F |
+| Show completions | Esc |
 
 Pinch on the trackpad to zoom the preview.
 
@@ -47,10 +50,16 @@ open Tidepool.xcodeproj
 
 Select the **Tidepool** scheme and press **⌘R**.
 
-Run the unit and UI tests from Xcode (**⌘U**) or from the command line:
+Run the unit tests from Xcode (**⌘U**) or from the command line. They run in the background and do not take over the mouse or keyboard:
 
 ```bash
 xcodebuild test -project Tidepool.xcodeproj -scheme Tidepool -destination 'platform=macOS'
+```
+
+The UI tests are in a separate scheme because they control the mouse and keyboard. Do not use the Mac while they run (about two minutes):
+
+```bash
+xcodebuild test -project Tidepool.xcodeproj -scheme "Tidepool UI Tests" -destination 'platform=macOS'
 ```
 
 ## How it works
@@ -59,18 +68,22 @@ Tidepool is a SwiftUI document app with no Swift package dependencies.
 
 | Part | File |
 | --- | --- |
-| Document model (`.mmd`, `.mermaid`, plain text) | `Tidepool/Model/MermaidDocument.swift` |
-| Diagram type detection and examples | `Tidepool/Model/DiagramKind.swift` |
-| Source coloring, clipboard and Markdown helpers | `Tidepool/Model/MermaidSyntax.swift`, `MermaidSource.swift` |
-| Reload when the file changes on disk | `Tidepool/Model/FileChanges.swift` |
-| Preview and export (SwiftUI `WebView` and bundled `mermaid.min.js`) | `Tidepool/Rendering/` |
+| Document model (`.mmd`, `.mermaid`, plain text) | `Shared/Model/MermaidDocument.swift` |
+| Diagram type detection and examples | `Shared/Model/DiagramKind.swift` |
+| Source coloring, completion, and error lines | `Shared/Model/MermaidSyntax.swift`, `MermaidCompletion.swift`, `MermaidErrorLocation.swift` |
+| Clipboard and Markdown helpers | `Shared/Model/MermaidSource.swift` |
+| Reload when the file changes on disk | `Shared/Model/FileChanges.swift` |
+| Preview and export (SwiftUI `WebView` and bundled `mermaid.min.js`) | `Shared/Rendering/` |
 | Editor window | `Tidepool/Views/` |
+| Finder Quick Look extension | `TidepoolQuickLook/` |
+
+The app and the Quick Look extension both build the files in `Shared/`.
 
 The preview page runs Mermaid with `securityLevel: 'strict'` and a Content Security Policy that allows only the app's own scripts. A diagram cannot run scripts, load remote content, or navigate the preview. The app turns on the sandbox's outgoing-connections entitlement only because WebKit's content process needs it in a sandboxed app.
 
 ## Third-party code
 
-Tidepool bundles [Mermaid](https://github.com/mermaid-js/mermaid) 12.1.0 (`Tidepool/Resources/mermaid.min.js`), © Knut Sveidqvist and contributors, under the MIT License. See `Tidepool/Resources/mermaid-LICENSE.txt`.
+Tidepool bundles [Mermaid](https://github.com/mermaid-js/mermaid) 12.1.0 (`Shared/Resources/mermaid.min.js`), © Knut Sveidqvist and contributors, under the MIT License. See `Shared/Resources/mermaid-LICENSE.txt`.
 
 The app icon is drawn by `scripts/make-icon.swift`.
 
