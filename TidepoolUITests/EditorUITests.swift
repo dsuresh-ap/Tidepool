@@ -181,7 +181,8 @@ final class ErrorUITests: XCTestCase {
 
         let lineButton = app.buttons["errorLineButton"].firstMatch
         XCTAssertTrue(lineButton.waitForExistence(timeout: 10))
-        XCTAssertEqual(lineButton.title, "Line 3")
+        XCTAssertEqual(editor.value as? String, "flowchart LR\n    A --> B\n    B --> C[Open\n", "Completion must not change typed text")
+        XCTAssertEqual(lineButton.label, "Line 3")
         lineButton.click()
         XCTAssertTrue((editor.value(forKey: "hasKeyboardFocus") as? Bool) ?? false)
     }

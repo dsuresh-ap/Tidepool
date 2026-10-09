@@ -5,7 +5,7 @@ import SwiftUI
 ///
 /// Unlike `TextEditor`, it turns off smart quotes and smart dashes, which would change
 /// arrows such as `-->`. It colors the source, marks the line that has an error, and
-/// suggests words while you type (press Esc to show suggestions at any time).
+/// suggests words when you pause while typing (press Esc to show suggestions at any time).
 struct CodeEditor: NSViewRepresentable {
     /// A request to select a line and scroll to it. A new `id` repeats the request.
     struct LineRequest: Equatable {
@@ -105,22 +105,27 @@ struct CodeEditor: NSViewRepresentable {
             return suggestions
         }
 
-        /// Shows suggestions after two or more letters are typed, like Xcode.
+        private var pendingSuggestion: DispatchWorkItem?
+
+        /// Shows suggestions when typing pauses after two or more letters of a word.
+        /// Waiting for a pause keeps the list from interrupting fast typing.
         private func suggestIfTyping(in textView: NSTextView) {
+            pendingSuggestion?.cancel()
             defer { lastTypedText = nil }
-            guard let typed = lastTypedText, typed.count == 1, typed.first?.isLetter == true,
-                  textView.selectedRange().length == 0
-            else { return }
-            let source = textView.string as NSString
-            let cursor = textView.selectedRange().location
-            let partial = textView.rangeForUserCompletion
-            guard partial.location != NSNotFound, NSMaxRange(partial) == cursor, partial.length >= 2 else { return }
-            let suggestions = MermaidCompletion.suggestions(
-                for: source.substring(with: partial), in: textView.string,
-                atFirstStatement: Self.isAtFirstStatement(partial, in: textView.string)
-            )
-            guard !suggestions.isEmpty else { return }
-            DispatchQueue.main.async { textView.complete(nil) }
+            guard let typed = lastTypedText, typed.count == 1, typed.first?.isLetter == true else { return }
+            let cursor = textView.selectedRange()
+            let work = DispatchWorkItem { [weak textView] in
+                guard let textView, textView.selectedRange() == cursor, cursor.length == 0 else { return }
+                let partial = textView.rangeForUserCompletion
+                guard partial.location != NSNotFound, NSMaxRange(partial) == cursor.location, partial.length >= 2 else { return }
+                let suggestions = MermaidCompletion.suggestions(
+                    for: (textView.string as NSString).substring(with: partial), in: textView.string,
+                    atFirstStatement: Self.isAtFirstStatement(partial, in: textView.string)
+                )
+                if !suggestions.isEmpty { textView.complete(nil) }
+            }
+            pendingSuggestion = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: work)
         }
 
         private static func isAtFirstStatement(_ range: NSRange, in source: String) -> Bool {

@@ -8,7 +8,7 @@ Write [Mermaid](https://mermaid.js.org) on the left and see the diagram on the r
 
 - **Live preview.** The preview updates as you type. When the source has an error, the last good diagram stays on screen, the broken line is marked in the source, and **Line N** in the error bar takes you to it.
 - **Quick Look.** Select a `.mmd` file in Finder and press Space to see the diagram.
-- **Code completion.** Suggestions appear as you type: diagram types on the first line, then keywords for that diagram type and the names you already use. Press Esc to show them at any time.
+- **Code completion.** Suggestions appear when you pause while typing a word: diagram types on the first line, then keywords for that diagram type and the names you already use. Press Esc to show them at any time.
 - **Follows generated files.** When a script or tool rewrites an open `.mmd` file, the window shows the new diagram. Unsaved edits in the window are kept.
 - **Paste from anywhere.** **File › New Diagram from Clipboard** makes a diagram from copied Mermaid code. If you copy a chat reply or a README, Tidepool uses the first ```` ```mermaid ```` block.
 - **Many diagrams at once.** Each document opens as a tab. Drag a tab out to make a window, or tile two windows side by side.
